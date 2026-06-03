@@ -1,4 +1,4 @@
-const CACHE_NAME = 'solar-v1';
+const CACHE_NAME = 'solar-v2';
 const urlsToCache = [
   './index.html', './manifest.json'
 ];
