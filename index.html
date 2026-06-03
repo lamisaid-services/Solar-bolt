@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Solar bolt-nut calculator | PV Bolt & Nut Calculator</title>
+  <meta name="theme-color" content="#0d47a1">
+  <meta name="description" content="Industrial solar panel fastener calculator – bolt and nut sets for PV arrays">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Blue shades background */
+    body {
+      background: #0a2e5c;
+      background-image: radial-gradient(circle at 15% 30%, rgba(30, 136, 229, 0.2) 1.5px, transparent 1.5px),
+                        radial-gradient(circle at 80% 65%, rgba(25, 118, 210, 0.15) 1px, transparent 1px);
+      background-size: 48px 48px, 32px 32px;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.8rem;
+      position: relative;
+    }
+
+    /* Main calculator card - white with blue accents */
+    .solar-calc {
+      max-width: 800px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 2.25rem;
+      box-shadow: 0 28px 44px -16px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+    }
+
+    /* Header with blue theme */
+    .calc-header {
+      background: #0d47a1;
+      padding: 1.8rem 2rem 1.4rem 2rem;
+      color: white;
+      border-bottom: 5px solid #42a5f5;
+    }
+
+    .calc-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      text-align: center;
+      align
+    }
+
+    .sub {
+      font-size: 1rem;
+      margin-top: 12px;
+      opacity: 0.88;
+      border-left: 3px solid #42a5f5;
+      padding-left: 14px;
+      text-align: center;
+    }
+
+    .calc-body {
+      padding: 2rem 2rem 1.8rem 2rem;
+    }
+
+    .input-group {
+      margin-bottom: 2rem;
+    }
+
+    .input-group label {
+      font-weight: 700;
+      font-size: 0.6rem;
+      color: #0d47a1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 0.75rem;
+    }
+
+    .field-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .panel-input {
+      flex: 2;
+      padding: 1rem 1.2rem;
+      font-size: 1.2rem;
+      font-weight: 500;
+      border: 2px solid #bbdef5;
+      border-radius: 2rem;
+      background: #fefef9;
+      transition: all 0.2s;
+      font-family: monospace;
+      color: #0d47a1;
+      min-width: 160px;
+    }
+
+    .panel-input:focus {
+      outline: none;
+      border-color: #42a5f5;
+      box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.25);
+      background: #ffffff;
+    }
+
+    .btn-calc {
+      background: #1e88e5;
+      border: none;
+      padding: 0.85rem 2rem;
+      border-radius: 3rem;
+      font-weight: 700;
+      font-size: 1rem;
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-calc:hover {
+      background: #0b5e7e;
+      transform: translateY(-2px);
+    }
+
+    
+    .chip {
+      background: #e3f2fd;
+      border-radius: 40px;
+      padding: 0.4rem 1.1rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #0d47a1;
+      cursor: pointer;
+      border: 1px solid #90caf9;
+    }
+
+    .chip:hover {
+      background: #42a5f5;
+      color: white;
+    }
+
+    .result-card {
+      background: #f0f7ff;
+      border-radius: 1.8rem;
+      padding: 1.6rem;
+      margin: 1rem 0 0.5rem;
+      border: 1px solid #bbdef5;
+    }
+
+    .result-label {
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 1.2px;
+      font-weight: 700;
+      color: #1565c0;
+    }
+
+    .result-number {
+      font-size: 3.6rem;
+      font-weight: 800;
+      color: #0d47a1;
+      line-height: 1.2;
+      margin: 8px 0 6px;
+    }
+
+    .result-unit {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1e88e5;
+    }
+
+    .extra-note {
+      font-size: 0.78rem;
+      border-top: 1px dashed #bbdef5;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      color: #1565c0;
+    }
+
+    .error-msg {
+      background: #ffebee;
+      color: #c62828;
+      padding: 0.8rem 1.2rem;
+      border-radius: 1.2rem;
+      margin-bottom: 1rem;
+      border-left: 6px solid #c62828;
+    }
+
+    footer {
+      background: #e3f2fd;
+      padding: 1rem 2rem;
+      text-align: center;
+      font-size: 0.7rem;
+      color: #0d47a1;
+      border-top: 1px solid #90caf9;
+    }
+
+    #installBtn {
+      display: none;
+      width: 100%;
+      background: #1565c0;
+      color: white;
+      border: none;
+      padding: 0.8rem;
+      border-radius: 3rem;
+      font-weight: bold;
+      margin-top: 1rem;
+      cursor: pointer;
+    }
+
+    /* Top-left hamburger menu button */
+    .top-menu-btn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #0d47a1;
+      border: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      color: white;
+      font-size: 26px;
+      cursor: pointer;
+      z-index: 1001;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    .top-menu-btn:hover {
+      background: #42a5f5;
+    }
+
+    /* Side Navigation Menu - blue theme */
+    .side-nav {
+      position: fixed;
+      top: 0;
+      left: -280px;
+      width: 280px;
+      height: 100%;
+      background: #0a2e5c;
+      z-index: 1002;
+      transition: left 0.3s ease;
+      box-shadow: 2px 0 12px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      padding: 2rem 1rem;
+      gap: 0.5rem;
+    }
+    .side-nav.open {
+      left: 0;
+    }
+    .side-nav a, .side-nav button {
+      color: white;
+      text-decoration: none;
+      font-size: 1.1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 2rem;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+      cursor: pointer;
+    }
+    .side-nav a:hover, .side-nav button:hover {
+      background: #1565c0;
+    }
+    .close-menu {
+      margin-top: auto;
+      border-top: 1px solid rgba(255,255,255,0.3);
+      padding-top: 1rem;
+    }
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      display: none;
+    }
+    .overlay.active {
+      display: block;
+    }
+
+    @media (max-width: 550px) {
+      .calc-body { padding: 1.5rem; }
+      .result-number { font-size: 2.7rem; }
+      .btn-calc { padding: 0.7rem 1.5rem; }
+      .calc-header h1 { font-size: 1.5rem; }
+      .top-menu-btn {
+        width: 42px;
+        height: 42px;
+        font-size: 22px;
+        top: 12px;
+        left: 12px;
+      }
+      h1 .img-con{
+          border-radius: 50%;
+          background-color: white;
+          margin: 0 auto;
+          
+      }
+      #lam{
+         width: 8em; 
+         height: 8em;
+         border-radius: 50%;
+          
+      }
+    }
+    h1#lami{
+        text-align: center;
+        justify-content: center;
+    }
+  </style>
+</head>
+<body>
+
+<div class="solar-calc">
+  <div class="calc-header">
+    <h1 id="lami"><div class="img-con"><img src="lamisaid.png" id="lam"></div> Lamisaid services</h1>
+    <div class="sub"> Solar Panel Bolt + nut sets Estimator</div>
+  </div>
+
+  <div class="calc-body">
+    <div class="input-group">
+      <label>🔩 Number of solar panels (x) <span style="font-weight: normal;">(integer ≥ 0)</span></label>
+      <div class="field-row">
+        <input type="number" id="panelCount" class="panel-input" placeholder="e.g., 4, 5, 9, 10" step="1" min="0">
+        <button id="calculateBtn" class="btn-calc">Bolt-Nut</button>
+      </div>
+      
+    </div>
+
+    <div id="resultContainer">
+      <div class="result-card">
+        <div class="result-label">📋 READY FOR INPUT</div>
+        <div class="result-number" style="font-size: 1.7rem; font-weight: 500;">Enter panel count</div>
+      </div>
+    </div>
+    <button id="installBtn">📲 Install App</button>
+  </div>
+</div>
+
+<!-- Top-left Hamburger Menu Button -->
+<button class="top-menu-btn" id="menuToggleBtn">☰</button>
+
+<!-- Mobile Navigation Menu (Blue Theme) -->
+<div class="overlay" id="menuOverlay"></div>
+<div class="side-nav" id="sideNav">
+  <a href="#" id="navHome">🏠 Home</a>
+  <a href="#"> Contact us on: </a>
+  <a href="#" id="navWhatsapp">💬 WhatsApp</a>
+  
+  <a href="#" id="navEmail"> ✉️ Email</a>
+ 
+ 
+  <a href="#" id="navPartner">🤝 Become a Partner</a>
+  <button id="navExit">Exit</button>
+  <div class="close-menu">
+    <button id="closeMenuBtn">✖ Close Menu</button>
+  </div>
+</div>
+
+<script>
+  // -------------------- CALCULATOR LOGIC --------------------
+  (function() {
+    const panelInput = document.getElementById('panelCount');
+    const calculateBtn = document.getElementById('calculateBtn');
+    const resultContainer = document.getElementById('resultContainer');
+
+    function calculateHardware(panels) {
+      if (typeof panels !== 'number' || isNaN(panels)) return 0;
+      const raw = 2 * panels - 2;
+      return raw > 0 ? raw : 0;
+    }
+
+    function parsePanels(inputValue) {
+      if (inputValue === null || inputValue === undefined || inputValue.trim() === '') {
+        return { valid: false, error: 'Please enter the number of solar panels.' };
+      }
+      const num = Number(inputValue);
+      if (isNaN(num)) return { valid: false, error: 'Invalid input: use numeric values only.' };
+      if (!Number.isInteger(num)) {
+        const floored = Math.floor(num);
+        if (floored < 0) return { valid: false, error: 'Panel count cannot be negative.' };
+        return { valid: true, panels: floored, warning: `Decimal rounded down to ${floored} panel(s).` };
+      }
+      if (num < 0) return { valid: false, error: 'Panel count cannot be negative.' };
+      return { valid: true, panels: num, warning: null };
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+      });
+    }
+
+    function updateUI() {
+      const rawValue = panelInput.value;
+      const parseResult = parsePanels(rawValue);
+
+      if (!parseResult.valid) {
+        resultContainer.innerHTML = `
+          <div class="error-msg">⚠️ ${escapeHtml(parseResult.error)}</div>
+          <div class="result-card" style="background: #faf7f0;">
+            <div class="result-label">🔄 AWAITING VALID INPUT</div>
+            <div class="result-number" style="font-size: 1.3rem; font-weight: 500; color:#7a5a48;">No valid panel count</div>
+          </div>
+        `;
+        return;
+      }
+
+      const panels = parseResult.panels;
+      const warningMsg = parseResult.warning;
+      const requiredSets = calculateHardware(panels);
+
+      let detailMessage = '';
+      if (panels === 0) detailMessage = '⚙️ No panels → 0 hardware required.';
+      else if (panels === 1) detailMessage = '🔩 Single panel needs 0 additional sets (direct mount).';
+      else detailMessage = `✅ Required ${requiredSets} sets`;
+
+      const warningHtml = warningMsg ? `<div class="error-msg" style="margin-top: 8px; background:#fff0e0; border-left-color:#f2b138;">⚠️ ${escapeHtml(warningMsg)}</div>` : '';
+
+      resultContainer.innerHTML = `
+        ${warningHtml}
+        <div class="result-card">
+          <div class="result-label">🧮 TOTAL HARDWARE REQUIRED</div>
+          <div class="result-number">${requiredSets}<span class="result-unit">pieces</span></div>
+          <div style="font-weight: 500; color: #0d47a1; margin: 6px 0 4px;">🔩 Bolt + Nut sets (each piece = 1 bolt + 1 nut)</div>
+          <div style="font-size: 0.85rem; margin-top: 8px;">${detailMessage}</div>
+        </div>
+      `;
+    }
+
+    calculateBtn.addEventListener('click', updateUI);
+    panelInput.addEventListener('input', updateUI);
+    panelInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') updateUI(); });
+
+    document.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const demoVal = chip.getAttribute('data-demo');
+        if (demoVal) {
+          panelInput.value = demoVal;
+          updateUI();
+          panelInput.focus();
+        }
+      });
+    });
+
+    if (!panelInput.value) {
+      resultContainer.innerHTML = `
+        <div class="result-card">
+          <div class="result-label">🌞 SOLAR HARDWARE ESTIMATOR</div>
+          <div class="result-number" style="font-size: 1.5rem;">Enter panel count</div>
+        </div>
+      `;
+    } else {
+      updateUI();
+    }
+  })();
+
+  // -------------------- MOBILE MENU LOGIC (Top-Left Button) --------------------
+  (function() {
+    const menuBtn = document.getElementById('menuToggleBtn');
+    const sideNav = document.getElementById('sideNav');
+    const overlay = document.getElementById('menuOverlay');
+    const closeMenuBtn = document.getElementById('closeMenuBtn');
+
+    function openMenu() {
+      sideNav.classList.add('open');
+      overlay.classList.add('active');
+    }
+    function closeMenu() {
+      sideNav.classList.remove('open');
+      overlay.classList.remove('active');
+    }
+
+    menuBtn.addEventListener('click', openMenu);
+    closeMenuBtn.addEventListener('click', closeMenu);
+    overlay.addEventListener('click', closeMenu);
+
+    // Navigation actions (update links as needed)
+    document.getElementById('navHome').addEventListener('click', (e) => {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      closeMenu();
+    });
+
+    document.getElementById('navWhatsapp').addEventListener('click', (e) => {
+      e.preventDefault();
+      window.open('https://wa.me/+234706 7820673?text=Hello%20Lamisaid%20Services', '_blank');
+      closeMenu();
+    });
+    document.getElementById('navEmail').addEventListener('click', (e) => {
+      e.preventDefault();
+      window.open('mailto: lamisaidservices247@gmail.com', '_blank');
+      closeMenu();
+    });
+    document.getElementById('navPartner').addEventListener('click', (e) => {
+      e.preventDefault();
+      window.open('mailto:lamisaidservices247', '_blank');
+      closeMenu();
+    });
+    document.getElementById('navExit').addEventListener('click', () => {
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        window.close();
+      } else {
+        alert('Exit: Close the browser tab to exit.');
+      }
+      closeMenu();
+    });
+  })();
+
+  // -------------------- PWA INSTALL --------------------
+  (function() {
+    const installBtn = document.getElementById('installBtn');
+    let deferredPrompt;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (installBtn) installBtn.style.display = 'block';
+    });
+
+    if (installBtn) {
+      installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          if (outcome === 'accepted') console.log('PWA installed');
+          deferredPrompt = null;
+          installBtn.style.display = 'none';
+        }
+      });
+    }
+
+    window.addEventListener('appinstalled', () => {
+      if (installBtn) installBtn.style.display = 'none';
+      console.log('PWA installed');
+    });
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js', { scope: './' })
+        .then(reg => console.log('SW registered:', reg))
+        .catch(err => console.log('SW failed:', err));
+    }
+  })();
+</script>
+</body>
+</html>
