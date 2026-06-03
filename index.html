@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -57,7 +58,6 @@
       gap: 12px;
       flex-wrap: wrap;
       text-align: center;
-      align
     }
 
     .sub {
@@ -136,7 +136,6 @@
       transform: translateY(-2px);
     }
 
-    
     .chip {
       background: #e3f2fd;
       border-radius: 40px;
@@ -304,6 +303,64 @@
       display: block;
     }
 
+    /* Custom Confirm Modal */
+    .custom-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+    .custom-modal.active {
+      display: flex;
+    }
+    .modal-content {
+      background: white;
+      max-width: 320px;
+      width: 85%;
+      border-radius: 2rem;
+      padding: 1.8rem;
+      text-align: center;
+      box-shadow: 0 20px 35px rgba(0,0,0,0.3);
+      border-top: 6px solid #0d47a1;
+    }
+    .modal-content p {
+      font-size: 1.1rem;
+      margin: 1rem 0;
+      color: #0d47a1;
+      font-weight: 500;
+    }
+    .modal-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+    .modal-buttons button {
+      padding: 0.6rem 1.5rem;
+      border-radius: 2rem;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .modal-buttons .btn-yes {
+      background: #d32f2f;
+      color: white;
+    }
+    .modal-buttons .btn-no {
+      background: #1e88e5;
+      color: white;
+    }
+    .modal-buttons button:hover {
+      opacity: 0.85;
+      transform: scale(1.02);
+    }
+
     @media (max-width: 550px) {
       .calc-body { padding: 1.5rem; }
       .result-number { font-size: 2.7rem; }
@@ -319,14 +376,12 @@
       h1 .img-con{
           border-radius: 50%;
           background-color: white;
-          margin: 0 auto;
-          
+          margin: 0 auto;   
       }
       #lam{
          width: 8em; 
          height: 8em;
          border-radius: 50%;
-          
       }
     }
     h1#lami{
@@ -350,7 +405,6 @@
         <input type="number" id="panelCount" class="panel-input" placeholder="e.g., 4, 5, 9, 10" step="1" min="0">
         <button id="calculateBtn" class="btn-calc">Bolt-Nut</button>
       </div>
-      
     </div>
 
     <div id="resultContainer">
@@ -372,14 +426,22 @@
   <a href="#" id="navHome">🏠 Home</a>
   <a href="#"> Contact us on: </a>
   <a href="#" id="navWhatsapp">💬 WhatsApp</a>
-  
   <a href="#" id="navEmail"> ✉️ Email</a>
- 
- 
   <a href="#" id="navPartner">🤝 Become a Partner</a>
   <button id="navExit">Exit</button>
   <div class="close-menu">
     <button id="closeMenuBtn">✖ Close Menu</button>
+  </div>
+</div>
+
+<!-- Custom Confirm Modal -->
+<div id="exitModal" class="custom-modal">
+  <div class="modal-content">
+    <p>⚠️ Are you sure you want to exit?</p>
+    <div class="modal-buttons">
+      <button class="btn-yes" id="confirmExitYes">Yes, Exit</button>
+      <button class="btn-no" id="confirmExitNo">Cancel</button>
+    </div>
   </div>
 </div>
 
@@ -485,12 +547,17 @@
     }
   })();
 
-  // -------------------- MOBILE MENU LOGIC (Top-Left Button) --------------------
+  // -------------------- MOBILE MENU LOGIC (Top-Left Button) WITH CUSTOM MODAL --------------------
   (function() {
     const menuBtn = document.getElementById('menuToggleBtn');
     const sideNav = document.getElementById('sideNav');
     const overlay = document.getElementById('menuOverlay');
     const closeMenuBtn = document.getElementById('closeMenuBtn');
+
+    // Modal elements
+    const exitModal = document.getElementById('exitModal');
+    const confirmYes = document.getElementById('confirmExitYes');
+    const confirmNo = document.getElementById('confirmExitNo');
 
     function openMenu() {
       sideNav.classList.add('open');
@@ -500,12 +567,18 @@
       sideNav.classList.remove('open');
       overlay.classList.remove('active');
     }
+    function hideModal() {
+      exitModal.classList.remove('active');
+    }
+    function showExitConfirmation() {
+      exitModal.classList.add('active');
+    }
 
     menuBtn.addEventListener('click', openMenu);
     closeMenuBtn.addEventListener('click', closeMenu);
     overlay.addEventListener('click', closeMenu);
 
-    // Navigation actions (update links as needed)
+    // Navigation actions
     document.getElementById('navHome').addEventListener('click', (e) => {
       e.preventDefault();
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -514,26 +587,46 @@
 
     document.getElementById('navWhatsapp').addEventListener('click', (e) => {
       e.preventDefault();
-      window.open('https://wa.me/+234706 7820673?text=Hello%20Lamisaid%20Services', '_blank');
+      window.open('https://wa.me/+2347067820673?text=Hello%20Lamisaid%20Services', '_blank');
       closeMenu();
     });
     document.getElementById('navEmail').addEventListener('click', (e) => {
       e.preventDefault();
-      window.open('mailto: lamisaidservices247@gmail.com', '_blank');
+      window.open('mailto:lamisaidservices247@gmail.com', '_blank');
       closeMenu();
     });
     document.getElementById('navPartner').addEventListener('click', (e) => {
       e.preventDefault();
-      window.open('mailto:lamisaidservices247', '_blank');
+      window.open('mailto:lamisaidservices247@gmail.com', '_blank');
       closeMenu();
     });
-    document.getElementById('navExit').addEventListener('click', () => {
+
+    // Exit button: show custom modal instead of alert
+    const exitBtn = document.getElementById('navExit');
+    exitBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      showExitConfirmation();
+    });
+
+    // Modal "Yes" action
+    confirmYes.addEventListener('click', () => {
+      hideModal();
+      closeMenu();
       if (window.matchMedia('(display-mode: standalone)').matches) {
         window.close();
       } else {
         alert('Exit: Close the browser tab to exit.');
       }
-      closeMenu();
+    });
+
+    // Modal "No" action
+    confirmNo.addEventListener('click', () => {
+      hideModal();
+    });
+
+    // Close modal if clicking outside content
+    exitModal.addEventListener('click', (e) => {
+      if (e.target === exitModal) hideModal();
     });
   })();
 
